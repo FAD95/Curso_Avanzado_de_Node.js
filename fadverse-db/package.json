@@ -1,0 +1,15 @@
+{
+  "name": "platziverse-db",
+  "version": "1.0.0",
+  "description": "Una simple plataforma de IoT. Este es el modulo de base de datos",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fadith Escorcia",
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^14.3.4"
+  }
+}
