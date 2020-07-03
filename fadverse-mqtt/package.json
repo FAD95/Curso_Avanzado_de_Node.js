@@ -1,0 +1,35 @@
+{
+  "name": "fadverse-mqtt",
+  "version": "1.0.0",
+  "private": "true",
+  "description": "A simple IoT platform - MQTT Server",
+  "main": "server.js",
+  "scripts": {
+    "lint": "standard",
+    "start": "NODE_ENV=production node src/server.js",
+    "dev": "DEBUG=fadverse:* nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FAD95/Curso_Avanzado_de_Node.js.git"
+  },
+  "author": "Fadith Escorcia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FAD95/Curso_Avanzado_de_Node.js/issues"
+  },
+  "homepage": "https://github.com/FAD95/Curso_Avanzado_de_Node.js#readme",
+  "devDependencies": {
+    "mqtt": "^4.1.0",
+    "nodemon": "^2.0.4",
+    "standard": "^14.3.4"
+  },
+  "dependencies": {
+    "aedes": "^0.42.4",
+    "aedes-persistence-redis": "^7.0.0",
+    "chalk": "^4.1.0",
+    "debug": "^4.1.1",
+    "redis": "^3.0.2"
+  }
+}

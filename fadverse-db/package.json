@@ -1,6 +1,7 @@
 {
   "name": "platziverse-db",
   "version": "1.0.0",
+  "private": "true",
   "description": "Una simple plataforma de IoT. Este es el modulo de base de datos",
   "main": "index.js",
   "scripts": {
