@@ -3,8 +3,17 @@
 const net = require('net')
 const debug = require('debug')('fadverse:mqtt')
 const chalk = require('chalk')
-
-// const database = require('ionode-db')
+const db = require('fadverse-db')
+const redisPersistence = require('aedes-persistence-redis')
+const { parsePayload } = require('./utils')
+const config = {
+  database: process.env.DB_NAME || 'fadverse',
+  username: process.env.DB_USER || 'admin',
+  password: process.env.DB_PASS || 'arianna',
+  host: process.env.DB_HOST || 'localhost',
+  dialect: 'postgres',
+  logging: (s) => debug(s)
+}
 // const {
 //   utils: { parsePayload, handleFatalError, handleError },
 //   config,
@@ -15,13 +24,6 @@ const chalk = require('chalk')
 // redisPersistence to make aedes backend with redis
 // https://www.npmjs.com/package/aedes-persistence-redis
 
-function handleError(err) {
-  console.error(err);  
-}
-function handleFatalError(err) {
-  console.error(err)
-}
-const redisPersistence = require('aedes-persistence-redis')
 const aedes = require('aedes')()
 //   ({
 //   persistence: redisPersistence({
@@ -58,24 +60,79 @@ server.listen(1883, (error) => {
 })
 
 server.on('listening', async () => {
-  // try {
-  //   // Initializes Agent and Metric services
-  //   const services = await database(databaseConfig)
-  //   Agent = services.Agent
-  //   Metric = services.Metric
-  // } catch (error) {
-  //   handleError(error)
-  // }
+  try {
+    // Initializes Agent and Metric services
+    const services = await db(config).catch(handleFatalError)
+    Agent = services.Agent
+    Metric = services.Metric
+  } catch (error) {
+    handleError(error)
+  }
 })
 
 aedes.on('client', (client) => {
-  debug(`[client-connected]: ${client.id}`)
+  debug(`[Client-Connected]: ${client.id}`)
+
+  clients.set(client.id, null)
 })
 
 aedes.on('publish', async (packet, client) => {
-  debug(`[received]: ${packet.topic}`)
-  console.log(packet, client);
-  
+  debug(`[Recived]: ${packet.topic}`)
+
+  switch (packet.topic) {
+    case 'agent/connected':
+    case 'agent/disconnected': {
+      debug(`[Payload]: ${packet.payload}`)
+      break
+    }
+    case 'agent/message': {
+      debug(`[Payload]: ${packet.payload}`)
+
+      // Store Agent in DB
+      const payload = await parsePayload(packet.payload)
+      if (payload) {
+        payload.agent.connnected = true
+        let agent
+        try {
+          agent = await Agent.createOrUpdate(payload.agent)
+        } catch (err) {
+          return handleError(err)
+        }
+        debug(`Agent ${agent.uuid} saved`)
+
+        // Notify Agent is Connected
+        if (!clients.get(client.id)) {
+          clients.set(client.id, agent)
+          aedes.publish({
+            topic: 'agent/connected',
+            payload: JSON.stringify({
+              agent: {
+                uuid: agent.uuid,
+                name: agent.name,
+                hostname: agent.hostname,
+                pid: agent.pid,
+                connected: agent.connected
+              }
+            })
+          })
+        }
+
+        // Store Metrics
+        for (const metric of payload.metrics) {
+          let m
+
+          try {
+            m = await Metric.create(agent.uuid, metric)
+          } catch (err) {
+            return handleError(err)
+          }
+
+          debug(`[Metric ${m.id} saved on agent ${agent.uuid}]`)
+        }
+      }
+      break
+    }
+  }
 
   // if the topic is `agent/message` makes process to save the agent
   // in the database else just log the topic
@@ -146,8 +203,8 @@ aedes.on('publish', async (packet, client) => {
 })
 
 aedes.on('clientDisconnect', async (client) => {
-  debug(`[client-disconnected]: ${client.id}`)
-  // Try to find the client in the clients connected list
+  debug(`[Client-Disconnected]: ${client.id}`)
+  // // Try to find the client in the clients connected list
   const agent = clients.get(client.id)
 
   if (agent) {
@@ -165,9 +222,9 @@ aedes.on('clientDisconnect', async (client) => {
       topic: 'agent/disconnected',
       payload: JSON.stringify({
         agent: {
-          uuid: agent.uuid,
-        },
-      }),
+          uuid: agent.uuid
+        }
+      })
     })
 
     debug(
@@ -175,3 +232,20 @@ aedes.on('clientDisconnect', async (client) => {
     )
   }
 })
+
+aedes.on('error', handleFatalError)
+
+function handleError (err) {
+  console.error(`${chalk.red('[Error]')} ${err.message}`)
+  console.error(err.stack)
+}
+
+function handleFatalError (err) {
+  console.error(`${chalk.red('[Fatal error]')} ${err.message}`)
+  console.error(err.stack)
+  process.exit(1)
+}
+
+// Para manejar procesos que no han sido capturados
+process.on('uncaughtExeption', handleFatalError)
+process.on('unhandledRejection', handleFatalError)

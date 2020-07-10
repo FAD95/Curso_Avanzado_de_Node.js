@@ -6,6 +6,7 @@
   "main": "server.js",
   "scripts": {
     "lint": "standard",
+    "fix": "standard --fix",
     "start": "NODE_ENV=production node src/server.js",
     "dev": "DEBUG=fadverse:* nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,6 +31,7 @@
     "aedes-persistence-redis": "^7.0.0",
     "chalk": "^4.1.0",
     "debug": "^4.1.1",
+    "fadverse-db": "file:../fadverse-db",
     "redis": "^3.0.2"
   }
 }
