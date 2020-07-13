@@ -2,17 +2,18 @@
 
 const debug = require('debug')('fadverse:api:routes')
 const express = require('express')
-const db = require('fadverse-db')
-const config = require('./config')
 const asyncify = require('express-asyncify')
+const auth = require('express-jwt')
+const db = require('fadverse-db')
+const config = require('utils')
 
 const api = asyncify(express.Router())
 
 let services, Agent, Metric
 
 api.use('*', async (req, res, next) => {
-    if (!services) {
-      debug('Connecting to database')
+  if (!services) {
+    debug('Connecting to database')
     try {
       services = await db(config.db)
     } catch (err) {
@@ -22,23 +23,80 @@ api.use('*', async (req, res, next) => {
     Agent = services.Agent
     Metric = services.Metric
   }
-    next()
+  next()
 })
 
-api.get('/agents', (req, res) => {
+api.get('/agents', auth(config.auth), async (req, res, next) => {
   debug('A request has come to /agents')
-  res.status(200).send({})
-})
-api.get('/agent/:uuid', (req, res, next) => {
-  const { uuid } = req.params
-  if (uuid !== 'yyy') {
-    return next(new Error('Agent not found'))
+
+  const { user } = req
+
+  if (!user || !user.username) {
+    return next(new Error('Not authorized'))
   }
-  res.send({ uuid })
+
+  let agents = []
+  try {
+    if (user.admin) {
+      console.log('Admin');
+      agents = await Agent.findConnected()
+    } else {
+      agents = await Agent.findByUsername(user.username)
+    }
+  } catch (error) {
+    return next(error)
+  }
+
+  res.send(agents)
 })
-api.get('/metrics/:uuid/:type', (req, res) => {
-  const { uuid, type } = req.params
-  res.send({ uuid, type })
+api.get('/agent/:uuid', async (req, res, next) => {
+  const { uuid } = req.params
+
+  debug(`request to /agent/${uuid}`)
+
+  let agent
+  try {
+    agent = await Agent.findByUuid(uuid)
+  } catch (error) {
+    return next(error)
+  }
+  if (!agent) {
+    return next(new Error(`Agent not found with uuid ${uuid}`))
+  }
+  res.send(agent)
+})
+api.get('/metrics/:uuid/', async (req, res, next) => {
+  const { uuid } = req.params
+
+  debug(`request to /metrics/${uuid}`)
+  let metrics = []
+  try {
+    metrics = await Metric.findByAgentUuid(uuid)
+  } catch (error) {
+    return next(error)
+  }
+  if (!metrics || metrics.length === 0) {
+    return next(new Error(`Metrics not found for agent with uuid ${uuid}`))
+  }
+  res.send(metrics)
 })
 
+api.get('/metrics/:uuid/:type', async (req, res, next) => {
+  const { uuid, type } = req.params
+
+  debug(`request to /metrics/${uuid}/${type}`)
+  let metrics = []
+
+  try {
+    metrics = await Metric.findByTypeAgentUuid(type, uuid)
+  } catch (error) {
+    return next(error)
+  }
+  if (!metrics || metrics.length === 0) {
+    return next(
+      new Error(`Metrics (${type}) not found for agent with uuid ${uuid}`)
+    )
+  }
+  res.send(metrics)
+})
 module.exports = api
