@@ -1,0 +1,38 @@
+{
+  "name": "fadverse-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple IoT platform - API",
+  "main": "server.js",
+  "scripts": {
+    "test": "DEBUG=fadverse:* ava tests/* --verbose",
+    "lint": "standard",
+    "fix": "standard --fix",
+    "start": "NODE_ENV=production node server.js",
+    "dev": "DEBUG=fadverse:* nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FAD95/Curso_Avanzado_de_Node.js.git"
+  },
+  "author": "Fadith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FAD95/Curso_Avanzado_de_Node.js/issues"
+  },
+  "homepage": "https://github.com/FAD95/Curso_Avanzado_de_Node.js#readme",
+  "devDependencies": {
+    "ava": "^3.10.1",
+    "nodemon": "^2.0.4",
+    "standard": "^14.3.4",
+    "supertest": "^4.0.2"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "express-asyncify": "^1.0.1",
+    "fadverse-db": "file:../fadverse-db",
+    "utils": "file:../utils"
+  }
+}

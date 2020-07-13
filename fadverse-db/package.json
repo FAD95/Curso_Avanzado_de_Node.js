@@ -1,7 +1,7 @@
 {
   "name": "fadverse-db",
   "version": "1.0.0",
-  "private": "true",
+  "private": true,
   "description": "Una simple plataforma de IoT. Este es el modulo de base de datos",
   "main": "src/index.js",
   "scripts": {

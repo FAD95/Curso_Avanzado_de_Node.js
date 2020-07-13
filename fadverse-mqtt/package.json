@@ -1,7 +1,7 @@
 {
   "name": "fadverse-mqtt",
   "version": "1.0.0",
-  "private": "true",
+  "private": true,
   "description": "A simple IoT platform - MQTT Server",
   "main": "server.js",
   "scripts": {

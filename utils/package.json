@@ -1,0 +1,22 @@
+{
+  "name": "utils",
+  "version": "1.0.0",
+  "description": "A simple IoT platform - utils",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FAD95/Curso_Avanzado_de_Node.js.git"
+  },
+  "author": "Fadith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FAD95/Curso_Avanzado_de_Node.js/issues"
+  },
+  "homepage": "https://github.com/FAD95/Curso_Avanzado_de_Node.js#readme",
+  "dependencies": {
+    "debug": "^4.1.1"
+  }
+}

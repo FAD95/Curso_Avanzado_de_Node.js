@@ -12,7 +12,7 @@ const config = {
   password: process.env.DB_PASS || 'arianna',
   host: process.env.DB_HOST || 'localhost',
   dialect: 'postgres',
-  logging: (s) => debug(s)
+  logging: (s) => debug(s),
 }
 // const {
 //   utils: { parsePayload, handleFatalError, handleError },
@@ -111,23 +111,25 @@ aedes.on('publish', async (packet, client) => {
                 name: agent.name,
                 hostname: agent.hostname,
                 pid: agent.pid,
-                connected: agent.connected
-              }
-            })
+                connected: agent.connected,
+              },
+            }),
           })
         }
 
         // Store Metrics
-        for (const metric of payload.metrics) {
-          let m
 
-          try {
-            m = await Metric.create(agent.uuid, metric)
-          } catch (err) {
-            return handleError(err)
-          }
-
-          debug(`[Metric ${m.id} saved on agent ${agent.uuid}]`)
+        const allMetrics = payload.metrics.map((metric) => {
+          return Metric.create(agent.uuid, metric)
+        })
+        try {
+          await Promise.all(allMetrics)
+            .then((values) => {
+              debug(`[Metrics saved] on agent: ${agent.uuid}`)
+            })
+            .catch((err) => handleError(err))
+        } catch (err) {
+          handleError(err)
         }
       }
       break
@@ -222,9 +224,9 @@ aedes.on('clientDisconnect', async (client) => {
       topic: 'agent/disconnected',
       payload: JSON.stringify({
         agent: {
-          uuid: agent.uuid
-        }
-      })
+          uuid: agent.uuid,
+        },
+      }),
     })
 
     debug(
@@ -235,12 +237,12 @@ aedes.on('clientDisconnect', async (client) => {
 
 aedes.on('error', handleFatalError)
 
-function handleError (err) {
+function handleError(err) {
   console.error(`${chalk.red('[Error]')} ${err.message}`)
   console.error(err.stack)
 }
 
-function handleFatalError (err) {
+function handleFatalError(err) {
   console.error(`${chalk.red('[Fatal error]')} ${err.message}`)
   console.error(err.stack)
   process.exit(1)

@@ -1,0 +1,29 @@
+{
+  "name": "fadverse-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple IoT platform - Agent",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FAD95/Curso_Avanzado_de_Node.js.git"
+  },
+  "author": "Fadith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FAD95/Curso_Avanzado_de_Node.js/issues"
+  },
+  "homepage": "https://github.com/FAD95/Curso_Avanzado_de_Node.js#readme",
+  "devDependencies": {
+    "standard": "^14.3.4"
+  },
+  "dependencies": {
+    "debug": "^4.1.1",
+    "defaults": "^1.0.3",
+    "mqtt": "^4.1.0",
+    "uuid": "^8.2.0"
+  }
+}
