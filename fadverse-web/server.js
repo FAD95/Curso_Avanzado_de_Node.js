@@ -1,33 +1,35 @@
 'use strict'
 
-const debug = require('debug')('fadverse-web')
+const debug = require('debug')('fadverse:web')
 const http = require('http')
 const express = require('express')
+const asyncify = require('express-asyncify')
 const chalk = require('chalk')
 const path = require('path')
 const FadverseAgent = require('fadverse-agent')
+const { pipe } = require('./utils')
+const proxy = require('./proxy')
 
 const port = process.env.PORT || 8080
-const app = express()
+const app = asyncify(express())
 const server = http.createServer(app)
 const io = require('socket.io')(server)
-const agent = new FadverseAgent()
+const agent = new FadverseAgent({
+  name: 'myapp',
+  username: 'admin',
+  interval: 2000,
+  mqtt: {
+    host: 'mqtt://localhost:1883',
+  },
+})
 
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/', proxy)
 
 // Socket.io / WebSockets
 io.on('connect', (socket) => {
-    debug(`Connected ${socket.id}`)
-  console.log(`Connected ${socket.id}`)    
-    agent.on('agent/connected', (payload) => {
-      socket.emit('agent/connected', payload)
-    })
-    agent.on('agent/message', (payload) => {
-      socket.emit('agent/message', payload)
-    })
-    agent.on('agent/disconnected', (payload) => {
-      socket.emit('agent/disconnected', payload)
-    })
+  debug(`Connected ${socket.id}`)
+  pipe(agent, socket)
 })
 
 function handleFatalError(err) {
@@ -44,5 +46,5 @@ server.listen(port, () => {
       '[fadverse-web]'
     )} server listening on http://localhost:${port}`
   )
-    agent.connect()
+  agent.connect()
 })

@@ -4,6 +4,9 @@ const agent = new FadverseAgent({
   name: 'myapp',
   username: 'admin',
   interval: 2000,
+  mqtt: {
+    host: 'mqtt://localhost:1883',
+  },
 })
 
 agent.connect()
@@ -21,6 +24,7 @@ agent.addMetric('callbackMetric', function getRandomCallback(callback) {
     callback(null, Math.random())
   }, 1000)
 })
+
 
 // This agent only
 agent.on('connected', handler)

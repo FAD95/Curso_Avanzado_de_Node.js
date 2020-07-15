@@ -10,15 +10,15 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io()
-      socket.on('agent/message', function (payload) {
-        console.log('agent/message', payload)
-      })
       socket.on('agent/connected', function (payload) {
         console.log('agent/connected', payload)
-      })
+      });
+      socket.on('agent/message', function (payload) {
+        console.log('agent/message', payload)
+      });      
       socket.on('agent/disconnected', function (payload) {
         console.log('agent/disconnected', payload)
-      })      
+      });      
     </script>
   </body>
 </html>
