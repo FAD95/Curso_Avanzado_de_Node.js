@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=production node server.js",
-    "dev": "DEBUG=fadverse:* nodemon server.js",
+    "dev": "npm run prestart-dev && DEBUG=fadverse:* nodemon server.js",
+    "prestart": "npm run build",
+    "prestart-dev": "npm run build",
+    "build": "browserify -t babelify -t vueify client/app.js -o public/bundle.js",
     "lint": "standard",
     "fix": "standard --fix"
   },
@@ -20,17 +23,28 @@
   },
   "homepage": "https://github.com/FAD95/Curso_Avanzado_de_Node.js#readme",
   "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.1",
     "nodemon": "^2.0.4",
-    "standard": "^14.3.4"
+    "standard": "^14.3.4",
+    "vueify": "^9.4.1"
   },
   "dependencies": {
     "chalk": "^4.1.0",
+    "chart.js": "^2.9.3",
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "express-asyncify": "^1.0.1",
     "fadverse-agent": "file:../fadverse-agent",
+    "fadverse-utils": "file:../fadverse-utils",
+    "moment": "^2.27.0",
+    "random-material-color": "^1.0.5",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.0"
   }
 }

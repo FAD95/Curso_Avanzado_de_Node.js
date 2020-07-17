@@ -37,7 +37,7 @@
     "express-jwt": "^6.0.0",
     "express-jwt-permissions": "^1.3.3",
     "fadverse-db": "file:../fadverse-db",
-    "jsonwebtoken": "^8.5.1",
-    "utils": "file:../utils"
+    "fadverse-utils": "file:../fadverse-utils",
+    "jsonwebtoken": "^8.5.1"
   }
 }

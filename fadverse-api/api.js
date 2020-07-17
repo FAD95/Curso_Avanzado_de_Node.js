@@ -6,7 +6,7 @@ const asyncify = require('express-asyncify')
 const auth = require('express-jwt')
 const guard = require('express-jwt-permissions')()
 const db = require('fadverse-db')
-const config = require('utils')
+const config = require('fadverse-utils')
 
 const api = asyncify(express.Router())
 

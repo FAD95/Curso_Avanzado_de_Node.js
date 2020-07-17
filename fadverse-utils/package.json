@@ -1,5 +1,5 @@
 {
-  "name": "utils",
+  "name": "fadverse-utils",
   "version": "1.0.0",
   "description": "A simple IoT platform - utils",
   "main": "index.js",

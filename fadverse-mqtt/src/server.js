@@ -91,7 +91,7 @@ aedes.on('publish', async (packet, client) => {
       // Store Agent in DB
       const payload = await parsePayload(packet.payload)
       if (payload) {
-        payload.agent.connnected = true
+        payload.agent.connected = true
         let agent
         try {
           agent = await Agent.createOrUpdate(payload.agent)
@@ -144,8 +144,9 @@ aedes.on('clientDisconnect', async (client) => {
 
   if (agent) {
     // if client exists update its connected state to false in database
+    agent.connected = false
     try {
-      await Agent.createOrUpdate({ ...agent, connected: false })
+      await Agent.createOrUpdate(agent)
     } catch (error) {
       handleError(error)
     }

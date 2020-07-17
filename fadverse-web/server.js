@@ -24,13 +24,26 @@ const agent = new FadverseAgent({
 })
 
 app.use(express.static(path.join(__dirname, 'public')))
+
 app.use('/', proxy)
+
+// Express error handler
+app.use((err, req, res, next) => {
+  debug(`Error: ${err.message}`)
+  if (err.message.match(/not found/)) {
+    return res.status(404).send({ error: err.message })
+  }
+  res.status(500).send({ error: err.message })
+})
 
 // Socket.io / WebSockets
 io.on('connect', (socket) => {
   debug(`Connected ${socket.id}`)
   pipe(agent, socket)
 })
+
+
+
 
 function handleFatalError(err) {
   console.error(err.message)

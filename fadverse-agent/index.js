@@ -63,6 +63,7 @@ class FadverseAgent extends EventEmitter {
                 name: opts.name,
                 hostname: os.hostname() || 'localhost',
                 pid: process.pid,
+                connected: false
               },
               metrics: [],
               timestamp: new Date().getTime(),
