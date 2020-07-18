@@ -100,7 +100,6 @@ module.exports = {
 
   methods: {
     async initialize() {
-      console.log('holi')
       const { uuid } = this
 
       const options = {
@@ -114,11 +113,9 @@ module.exports = {
         agent = await request(options)
       } catch (e) {
         this.error = e.error.error
-        console.log('oerre')
         return
       }
 
-      console.log(agent)
       this.name = agent.name
       this.hostname = agent.hostname
       this.connected = agent.connected
@@ -137,14 +134,11 @@ module.exports = {
 
       let metrics
       try {
-        metrics = await request(options)
+        this.metrics = await request(options)
       } catch (e) {
         this.error = e.error.error
         return
       }
-
-      this.metrics = metrics
-
       this.startRealtime()
     },
 

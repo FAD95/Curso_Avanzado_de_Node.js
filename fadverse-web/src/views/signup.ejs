@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%- include ('./partials/_head') %>
+    <title>Create an account</title>
+  </head>
+  <body class="signup">
+    <div class="container">
+      <div class="col-sm-6 mx-auto">
+        <div class="card mt-5">
+          <div class="card-body">
+            <h1 class="text-center">
+              <span class="fa fa-sign-in"></span> Create an account
+            </h1>
+            <% if(message.length>0) { %>
+            <div class="alert alert-danger">
+              <%= message %>
+            </div>
+            <% } %>
+            <form action="/signup" method="post">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" class="form-control" required/>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" class="form-control" required/>
+              </div>
+              <div class="form-group">
+                <label for="password">Repeat Password</label>
+                <input type="password" name="passwordConfirm" class="form-control" />
+              </div>
+              <div class="text-center">
+                <input
+                  type="submit"
+                  class="btn btn-dark btn-lg"
+                  value="Submit"
+                />
+              </div>
+            </form>
+            <hr />
+            <div class="text-center">
+              <p>Already have an account? <a href="/login">Login</a></p>
+              <p>Or go <a href="/">Home</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

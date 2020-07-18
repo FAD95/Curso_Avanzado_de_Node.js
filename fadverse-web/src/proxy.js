@@ -18,7 +18,7 @@ api.get('/agents', async (req, res, next) => {
   res.send(result)
 })
 
-api.get('/agent/:uuid', async (req, res) => {
+api.get('/agent/:uuid', async (req, res, next) => {
   const { uuid } = req.params
   const options = requestOpts.get(`/agent/${uuid}`)
   let result
@@ -30,7 +30,7 @@ api.get('/agent/:uuid', async (req, res) => {
   res.send(result)
 })
 
-api.get('/metrics/:uuid', async (req, res) => {
+api.get('/metrics/:uuid', async (req, res, next) => {
   const { uuid } = req.params
   const options = requestOpts.get(`/metrics/${uuid}`)
   let result
@@ -42,7 +42,7 @@ api.get('/metrics/:uuid', async (req, res) => {
   res.send(result)
 })
 
-api.get('/metrics/:uuid/:type', async (req, res) => {
+api.get('/metrics/:uuid/:type', async (req, res, next) => {
   const { uuid, type } = req.params
   const options = requestOpts.get(`/metrics/${uuid}/${type}`)
   let result

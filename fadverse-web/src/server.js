@@ -9,6 +9,14 @@ const path = require('path')
 const FadverseAgent = require('fadverse-agent')
 const { pipe } = require('./utils')
 const proxy = require('./proxy')
+const mongoose = require('mongoose')
+const passport = require('passport')
+const flash = require('connect-flash')
+const morgan = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const session = require('express-session')
+const engine = require('react-engine')
 
 const port = process.env.PORT || 8080
 const app = asyncify(express())
@@ -23,9 +31,32 @@ const agent = new FadverseAgent({
   },
 })
 
-app.use(express.static(path.join(__dirname, 'public')))
+// Url de la base de datos en mongo
+const { url } = require('./config/database')
+mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
 
-app.use('/', proxy)
+require('./config/passport')(passport)
+// Settings
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
+
+// Middlewares
+app.use(morgan('dev'))
+app.use(cookieParser())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(
+  session({
+    secret: 'fadquiereaprender',
+    resave: false,
+    saveUninitialized: false,
+  })
+)
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(flash())
 
 // Express error handler
 app.use((err, req, res, next) => {
@@ -36,14 +67,14 @@ app.use((err, req, res, next) => {
   res.status(500).send({ error: err.message })
 })
 
+// routes
+require('./app/routes')(app, passport)
+
 // Socket.io / WebSockets
 io.on('connect', (socket) => {
   debug(`Connected ${socket.id}`)
   pipe(agent, socket)
 })
-
-
-
 
 function handleFatalError(err) {
   console.error(err.message)
@@ -52,6 +83,9 @@ function handleFatalError(err) {
 }
 process.on('uncaughtException', handleFatalError)
 process.on('unhandledRejection', handleFatalError)
+
+app.use(express.static(path.join(__dirname, 'public')))
+app.use('/', proxy)
 
 server.listen(port, () => {
   console.log(
