@@ -32,6 +32,6 @@
     "chalk": "^4.1.0",
     "debug": "^4.1.1",
     "fadverse-db": "file:../fadverse-db",
-    "redis": "^3.0.2"
+    "redis": "^3.1.1"
   }
 }
